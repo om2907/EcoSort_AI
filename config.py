@@ -1,1 +1,1 @@
-MODEL_PATH = 'EcoSort_AI/Image_classify.keras'
+MODEL_PATH = 'main/Image_classify.keras'

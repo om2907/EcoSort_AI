@@ -6,7 +6,7 @@ from tensorflow.keras.models import load_model
 from config import MODEL_PATH
 
 # Load the trained model
-model = load_model(MODEL_PATH)
+model = load_model('Image_classify.keras')
 
 # Define categories
 data_cat = ['O', 'R']

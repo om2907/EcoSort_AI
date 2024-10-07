@@ -3,6 +3,7 @@ import streamlit as st
 import numpy as np  # Corrected typo from nps to np
 from tensorflow import keras
 from tensorflow.keras.models import load_model
+from config import MODEL_PATH
 
 # Load the trained model
 model = load_model('Image_classify.keras')

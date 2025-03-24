@@ -1,28 +1,32 @@
 import os
-import requests
+import gdown
 import tensorflow as tf
 import streamlit as st
 import numpy as np
 from tensorflow.keras.models import load_model
 
-# GitHub raw file URL
-MODEL_URL = "https://raw.githubusercontent.com/om2907/EcoSort_AI/main/Image_classify.keras"
 MODEL_PATH = "Image_classify.keras"
+DRIVE_FILE_ID = "1KV2Ea9flhhwPUEaWuU410mEqAhmW6_mE"  # 🔹 Replace with your actual file ID
+DOWNLOAD_URL = f"https://drive.google.com/file/d/1KV2Ea9flhhwPUEaWuU410mEqAhmW6_mE/view?usp=sharing={DRIVE_FILE_ID}"
 
-# Function to download the model if it's missing
+# Function to download the model if missing
 def download_model():
-    st.write("Downloading model... ⏳")
-    response = requests.get(MODEL_URL, stream=True)
-    
-    if response.status_code == 200:
-        with open(MODEL_PATH, "wb") as file:
-            for chunk in response.iter_content(chunk_size=1024):
-                if chunk:
-                    file.write(chunk)
-        st.write("✅ Download complete!")
-    else:
-        st.error(f"❌ Failed to download model. HTTP Status: {response.status_code}")
-        st.stop()
+    st.write("📥 Downloading model from Google Drive...")
+    gdown.download(DOWNLOAD_URL, MODEL_PATH, quiet=False)
+    st.write("✅ Model download complete!")
+
+# Check if the model exists, otherwise download it
+if not os.path.exists(MODEL_PATH):
+    download_model()
+
+# Load the trained model
+try:
+    model = load_model(MODEL_PATH)
+    st.write("✅ Model loaded successfully!")
+except Exception as e:
+    st.error(f"❌ Error loading model: {e}")
+    st.stop()
+
 
 # Check if the model file exists, otherwise download it
 if not os.path.exists(MODEL_PATH):

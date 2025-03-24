@@ -1,1 +1,1 @@
-MODEL_PATH = 'main/Image_classify.keras'
+MODEL_PATH = 'Image_classify.keras'

@@ -1,10 +1,27 @@
+import os
 import tensorflow as tf
 import streamlit as st
 import numpy as np
 from tensorflow.keras.models import load_model
-from config import MODEL_PATH
 
-# Load the trained model
+# Define GitHub raw file URL (Replace with your actual GitHub file link)
+MODEL_URL = "https://github.com/om2907/EcoSort_AI/blob/ef488c1040468aec785b2d2462d4efc9293b655e/Image_classify.keras"
+MODEL_PATH = "Image_classify.keras"
+
+# Check if the model exists, else download it
+if not os.path.exists(MODEL_PATH):
+    st.write("Downloading model...")
+    import requests
+
+    response = requests.get(MODEL_URL, stream=True)
+    with open(MODEL_PATH, "wb") as file:
+        for chunk in response.iter_content(chunk_size=1024):
+            if chunk:
+                file.write(chunk)
+
+    st.write("Download complete!")
+
+# Load the model
 model = load_model(MODEL_PATH)
 
 # Define categories
@@ -14,7 +31,6 @@ data_cat = ['O', 'R']
 img_height = 180
 img_width = 180
 
-# Set header
 st.header("EcoSort AI")
 
 # Upload image

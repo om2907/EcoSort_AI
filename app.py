@@ -5,7 +5,7 @@ import numpy as np
 from tensorflow.keras.models import load_model
 
 # Define GitHub raw file URL (Replace with your actual GitHub file link)
-MODEL_URL = "https://github.com/om2907/EcoSort_AI/blob/ef488c1040468aec785b2d2462d4efc9293b655e/Image_classify.keras"
+MODEL_URL = "https://raw.githubusercontent.com/om2907/EcoSort_AI/main/Image_classify.keras"
 MODEL_PATH = "Image_classify.keras"
 
 # Check if the model exists, else download it

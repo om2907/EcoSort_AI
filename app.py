@@ -1,12 +1,11 @@
 import tensorflow as tf
 import streamlit as st
-import numpy as np  # Corrected typo from nps to np
-from tensorflow import keras
+import numpy as np
 from tensorflow.keras.models import load_model
 from config import MODEL_PATH
 
 # Load the trained model
-model = load_model('Image_classify.keras')
+model = load_model(MODEL_PATH)
 
 # Define categories
 data_cat = ['O', 'R']
@@ -22,17 +21,26 @@ st.header("EcoSort AI")
 uploaded_file = st.file_uploader("Choose an image...", type=["jpeg", "jpg", "png"])
 
 if uploaded_file is not None:
-    # Load the image
-    image_load = tf.keras.utils.load_img(uploaded_file, target_size=(img_height, img_width))
-    img_arr = tf.keras.utils.img_to_array(image_load)  # Corrected function from array_to_img to img_to_array
-    img_bat = tf.expand_dims(img_arr, axis=0)
+    try:
+        # Load and preprocess the image
+        image_load = tf.keras.utils.load_img(uploaded_file, target_size=(img_height, img_width))
+        img_arr = tf.keras.utils.img_to_array(image_load)
+        img_bat = tf.expand_dims(img_arr, axis=0)
 
-    # Make predictions
-    predict = model.predict(img_bat)
-    score = tf.nn.softmax(predict)
+        # Make predictions
+        predict = model.predict(img_bat)
+        score = tf.nn.softmax(predict[0])  # Apply softmax correctly
 
-    # Display the image at a smaller size (e.g., width = 300)
-    st.image(image_load, caption='Uploaded Image', width=300)
+        # Display the image
+        st.image(image_load, caption='Uploaded Image', width=300)
 
-    # Show prediction results
-    st.write('Waste in image is **{}** with accuracy of **{:0.2f}%**'.format(data_cat[np.argmax(score)], np.max(score) * 100))
+        # Show prediction results
+        st.write(f'### Waste in image is **{data_cat[np.argmax(score)]}** with accuracy of **{np.max(score) * 100:.2f}%**')
+
+        # Show all category scores
+        st.write("### Category Confidence:")
+        for i, category in enumerate(data_cat):
+            st.write(f"{category}: {score[i] * 100:.2f}%")
+
+    except Exception as e:
+        st.error(f"Error processing image: {e}")

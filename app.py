@@ -1,6 +1,7 @@
 import tensorflow as tf
 import streamlit as st
 import numpy as np
+import cv2
 from tensorflow.keras.models import load_model
 from huggingface_hub import hf_hub_download
 from PIL import Image

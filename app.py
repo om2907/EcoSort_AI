@@ -1,24 +1,17 @@
-import os
-import gdown
-import tensorflow as tf
 import streamlit as st
+import tensorflow as tf
 import numpy as np
+from huggingface_hub import hf_hub_download
 from tensorflow.keras.models import load_model
 
-# Google Drive model file ID
-DRIVE_FILE_ID = "1KV2Ea9flhhwPUEaWuU410mEqAhmW6_mE"
-MODEL_PATH = "Image_classify.keras"
-DOWNLOAD_URL = f"https://drive.google.com/uc?id={DRIVE_FILE_ID}"
+# Hugging Face Model Repository Details
+REPO_ID = "omchaudhari2644/Image_classify.keras"  # Replace with your Hugging Face repo
+FILENAME = "Image_classify.keras"  # Ensure this file is uploaded to Hugging Face
 
-def download_model():
-    """Download model if not found."""
-    if not os.path.exists(MODEL_PATH):
-        st.write("📥 Downloading model from Google Drive (This may take some time)...")
-        gdown.download(DOWNLOAD_URL, MODEL_PATH, quiet=False)
-        st.write("✅ Model download complete!")
-
-# Ensure model is available before loading
-download_model()
+# Download the model from Hugging Face
+st.write("📥 Downloading model from Hugging Face (This may take some time)...")
+MODEL_PATH = hf_hub_download(repo_id=REPO_ID, filename=FILENAME)
+st.write("✅ Model download complete!")
 
 # Load the model
 try:
@@ -41,7 +34,7 @@ if uploaded_file is not None:
 
         predictions = model.predict(img_bat)
         score = tf.nn.softmax(predictions[0])
-        categories = ['O', 'R']
+        categories = ['Organic', 'Recyclable']
 
         st.image(img, caption='🖼️ Uploaded Image', width=300)
         st.write(f'### 🏷 Waste Type: **{categories[np.argmax(score)]}** (Confidence: {np.max(score) * 100:.2f}%)')

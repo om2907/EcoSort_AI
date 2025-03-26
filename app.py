@@ -55,8 +55,8 @@ def predict_frame(image):
     score = tf.nn.softmax(predict)
 
     # **📸 Capture Image from Webcam**
-st.subheader("Take a Picture Using Your Webcam")
-img_file = st.camera_input("Click below to capture an image")
+    st.subheader("Take a Picture Using Your Webcam")
+    img_file = st.camera_input("Click below to capture an image")
 
     # Get prediction and confidence
     category = data_cat[np.argmax(score)]

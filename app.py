@@ -12,9 +12,9 @@ REPO_ID = "omchaudhari2644/Image_classify.keras"  # Replace with your Hugging Fa
 FILENAME = "Image_classify.keras"  # Ensure this file is uploaded to Hugging Face
 
 # Download and load the model
-st.write("📥 Downloading model from Hugging Face (This may take some time)...")
+#st.write("📥 Downloading model )...")
 MODEL_PATH = hf_hub_download(repo_id=REPO_ID, filename=FILENAME)
-st.write("✅ Model download complete!")
+#st.write("✅ Model download complete!")
 
 try:
     model = load_model(MODEL_PATH, compile=False)

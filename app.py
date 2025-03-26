@@ -37,18 +37,17 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Function to convert RGBA to RGB
+def convert_rgba_to_rgb(image):
+    if image.mode == 'RGBA':
+        return image.convert('RGB')
+    return image
 
-# Start video capture
-def start_video():
-    # Set up OpenCV video capture
-    cap = cv2.VideoCapture(0)  # 0 is usually the default camera
-    return cap
-
-# Function to make predictions on a frame
+# Function to make predictions on an image
 def predict_frame(image):
-    # Resize image to model's expected input shape
+    image = convert_rgba_to_rgb(image)  # Convert RGBA to RGB if needed
     image = image.resize((img_width, img_height))
-    img_arr = tf.keras.utils.img_to_array(image)
+    img_arr = tf.keras.utils.img_to_array(image)[:, :, :3]  # Ensure only 3 channels (RGB)
     img_bat = tf.expand_dims(img_arr, axis=0)
 
     # Make predictions
@@ -59,43 +58,6 @@ def predict_frame(image):
     category = data_cat[np.argmax(score)]
     confidence = np.max(score) * 100  # Convert to percentage
     return category, confidence
-
-def run_app():
-    col3, col4 = st.columns(2)
-    with col3:
-        cap = start_video()
-        stframe = st.empty()  # Create a placeholder for the video frame
-    with col4:
-        prediction_display = st.empty()  # Placeholder for prediction display
-
-    running = True  # Flag to control the webcam loop
-    
-    while running:
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        # Convert frame to Image for prediction
-        image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-
-        # Make predictions on the current frame
-        category, confidence = predict_frame(image)
-
-        # Display the live webcam feed
-        stframe.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), channels='RGB', use_container_width=True)
-
-       
-        # Update the prediction and confidence display
-        prediction_display.markdown(f"<p style='text-align: center;'>Confidence: <b>{confidence:.2f}%</b></p>", unsafe_allow_html=True)
-        prediction_display.markdown(f"<h2 style='text-align: center;'><strong>Prediction: {category}<strong></h2>", unsafe_allow_html=True)
-
-        # Delay to control frame rate
-        time.sleep(0.1)
-
-    cap.release()
-
-
-
 
 # Upload image functionality
 uploaded_file = st.file_uploader("Upload an image...", type=["jpeg", "jpg", "png"])
@@ -117,8 +79,6 @@ if uploaded_file is not None:
         st.markdown(f"<h2 style='text-align: center;'><strong>Prediction: {category}<strong></h2>", unsafe_allow_html=True)
         st.markdown(f"<p style='text-align: center;'>Confidence: <b>{confidence:.2f}%</b></p>", unsafe_allow_html=True)
 
-
 # Run the app
 if st.button("Start Webcam", key="start_webcam"):
-    run_app()
-
+    st.warning("Webcam feature is not available in hosted environments like Streamlit Cloud.")

@@ -88,5 +88,5 @@ if uploaded_file is not None:
         st.markdown(f"<p style='text-align: center;'>Confidence: <b>{confidence:.2f}%</b></p>", unsafe_allow_html=True)
 
 # Run the app
-if st.button("Start Webcam", key="start_webcam"):
+#if st.button("Start Webcam", key="start_webcam"):
     run_app()

@@ -1,9 +1,11 @@
-import streamlit as st
 import tensorflow as tf
+import streamlit as st
 import numpy as np
+import cv2
 from tensorflow.keras.models import load_model
 from huggingface_hub import hf_hub_download
 from PIL import Image
+import time
 
 # Hugging Face Model Repository Details
 REPO_ID = "omchaudhari2644/Image_classify.keras"  # Replace with your Hugging Face repo
@@ -25,8 +27,8 @@ except Exception as e:
 data_cat = ['Organic', 'Recyclable']
 
 # Define image dimensions based on the model's expected input shape
-img_height = 180
-img_width = 180
+img_height = 180  # Height defined in the model
+img_width = 180   # Width defined in the model
 
 # Set header and description
 st.markdown(
@@ -34,50 +36,88 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Function to make predictions
+
+# Start video capture
+def start_video():
+    # Set up OpenCV video capture
+    cap = cv2.VideoCapture(0)  # 0 is usually the default camera
+    return cap
+
+# Function to make predictions on a frame
 def predict_frame(image):
-    image = image.resize((img_width, img_height))  # Resize image
-    img_arr = tf.keras.utils.img_to_array(image) / 255.0  # Normalize
-    img_bat = np.expand_dims(img_arr, axis=0)  # Add batch dimension
+    # Resize image to model's expected input shape
+    image = image.resize((img_width, img_height))
+    img_arr = tf.keras.utils.img_to_array(image)
+    img_bat = tf.expand_dims(img_arr, axis=0)
 
+    # Make predictions
     predict = model.predict(img_bat)
-    score = tf.nn.softmax(predict[0])  # Get confidence scores
+    score = tf.nn.softmax(predict)
 
-    category = data_cat[np.argmax(score)]  # Get predicted category
+    # Get prediction and confidence
+    category = data_cat[np.argmax(score)]
     confidence = np.max(score) * 100  # Convert to percentage
     return category, confidence
 
-# **📸 Capture Image from Webcam**
-st.subheader("Take a Picture Using Your Webcam")
-img_file = st.camera_input("Click below to capture an image")
+def run_app():
+    col3, col4 = st.columns(2)
+    with col3:
+        cap = start_video()
+        stframe = st.empty()  # Create a placeholder for the video frame
+    with col4:
+        prediction_display = st.empty()  # Placeholder for prediction display
 
-if img_file is not None:
-    # Convert the uploaded file to an image
-    image = Image.open(img_file)
-
-    # 🚫 **DO NOT SHOW THE CAPTURED IMAGE** 🚫
+    running = True  # Flag to control the webcam loop
     
-    # Predict category
-    category, confidence = predict_frame(image)
+    while running:
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-    # Show Prediction
-    st.markdown(f"<h2 style='text-align: center;'><strong>Prediction: {category}<strong></h2>", unsafe_allow_html=True)
-    st.markdown(f"<p style='text-align: center;'>Confidence: <b>{confidence:.2f}%</b></p>", unsafe_allow_html=True)
+        # Convert frame to Image for prediction
+        image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
-# **📂 Upload an Image Instead**
-st.subheader("Or Upload an Image")
+        # Make predictions on the current frame
+        category, confidence = predict_frame(image)
+
+        # Display the live webcam feed
+        stframe.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), channels='RGB', use_container_width=True)
+
+       
+        # Update the prediction and confidence display
+        prediction_display.markdown(f"<p style='text-align: center;'>Confidence: <b>{confidence:.2f}%</b></p>", unsafe_allow_html=True)
+        prediction_display.markdown(f"<h2 style='text-align: center;'><strong>Prediction: {category}<strong></h2>", unsafe_allow_html=True)
+
+        # Delay to control frame rate
+        time.sleep(0.1)
+
+    cap.release()
+
+
+
+
+# Upload image functionality
 uploaded_file = st.file_uploader("Upload an image...", type=["jpeg", "jpg", "png"])
 
 if uploaded_file is not None:
-    # Load the uploaded image (but don’t show the captured one)
+    # Load and display the uploaded image
     uploaded_image = Image.open(uploaded_file)
 
+    # Create columns for layout
     col1, col2 = st.columns(2)
 
+    # Display uploaded image in the first column
     with col1:
         st.image(uploaded_image, caption='Uploaded Image', use_container_width=True)
 
+    # Make predictions on the uploaded image and display in the second column
     with col2:
         category, confidence = predict_frame(uploaded_image)
         st.markdown(f"<h2 style='text-align: center;'><strong>Prediction: {category}<strong></h2>", unsafe_allow_html=True)
         st.markdown(f"<p style='text-align: center;'>Confidence: <b>{confidence:.2f}%</b></p>", unsafe_allow_html=True)
+
+
+# Run the app
+if st.button("Start Webcam", key="start_webcam"):
+    run_app()
+

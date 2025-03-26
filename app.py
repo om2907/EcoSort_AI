@@ -56,7 +56,7 @@ if img_file is not None:
     image = Image.open(img_file)
 
     # Display the captured image
-    st.image(image, caption="Captured Image", use_column_width=True)
+    st.image(image, caption="Captured Image", use_container_width=True)  # ✅ FIXED DEPRECATED PARAMETER
 
     # Predict category
     category, confidence = predict_frame(image)
@@ -76,7 +76,7 @@ if uploaded_file is not None:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.image(uploaded_image, caption='Uploaded Image', use_container_width=True)
+        st.image(uploaded_image, caption='Uploaded Image', use_container_width=True)  # ✅ FIXED
 
     with col2:
         category, confidence = predict_frame(uploaded_image)

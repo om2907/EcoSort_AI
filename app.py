@@ -55,9 +55,8 @@ if img_file is not None:
     # Convert the uploaded file to an image
     image = Image.open(img_file)
 
-    # Display the captured image
-    st.image(image, caption="Captured Image", use_container_width=True)  # ✅ FIXED DEPRECATED PARAMETER
-
+    # 🚫 **DO NOT SHOW THE CAPTURED IMAGE** 🚫
+    
     # Predict category
     category, confidence = predict_frame(image)
 
@@ -70,13 +69,13 @@ st.subheader("Or Upload an Image")
 uploaded_file = st.file_uploader("Upload an image...", type=["jpeg", "jpg", "png"])
 
 if uploaded_file is not None:
-    # Load and display the uploaded image
+    # Load the uploaded image (but don’t show the captured one)
     uploaded_image = Image.open(uploaded_file)
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.image(uploaded_image, caption='Uploaded Image', use_container_width=True)  # ✅ FIXED
+        st.image(uploaded_image, caption='Uploaded Image', use_container_width=True)
 
     with col2:
         category, confidence = predict_frame(uploaded_image)

@@ -36,13 +36,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
-# Start video capture
-def start_video():
-    # Set up OpenCV video capture
-    cap = cv2.VideoCapture(0)  # 0 is usually the default camera
-    return cap
-
 # Function to make predictions on a frame
 def predict_frame(image):
     # Resize image to model's expected input shape
@@ -54,48 +47,25 @@ def predict_frame(image):
     predict = model.predict(img_bat)
     score = tf.nn.softmax(predict)
 
-
     # Get prediction and confidence
     category = data_cat[np.argmax(score)]
     confidence = np.max(score) * 100  # Convert to percentage
     return category, confidence
 
-def run_app():
-    col3, col4 = st.columns(2)
-    with col3:
-        cap = start_video()
-        stframe = st.empty()  # Create a placeholder for the video frame
-    with col4:
-        prediction_display = st.empty()  # Placeholder for prediction display
+# 📸 **Webcam Image Capture (New Feature)**
+st.subheader("Take a Picture Using Your Webcam")
+img_file = st.camera_input("Click below to capture an image")
 
-    running = True  # Flag to control the webcam loop
-    
-    while running:
-        ret, frame = cap.read()
-        if not ret:
-            break
+if img_file is not None:
+    # Convert the uploaded file to an image
+    image = Image.open(img_file)
 
-        # Convert frame to Image for prediction
-        image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+    # Predict category
+    category, confidence = predict_frame(image)
 
-        # Make predictions on the current frame
-        category, confidence = predict_frame(image)
-
-        # Display the live webcam feed
-        stframe.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), channels='RGB', use_container_width=True)
-
-       
-        # Update the prediction and confidence display
-        prediction_display.markdown(f"<p style='text-align: center;'>Confidence: <b>{confidence:.2f}%</b></p>", unsafe_allow_html=True)
-        prediction_display.markdown(f"<h2 style='text-align: center;'><strong>Prediction: {category}<strong></h2>", unsafe_allow_html=True)
-
-        # Delay to control frame rate
-        time.sleep(0.1)
-
-    cap.release()
-
-
-
+    # Show Prediction
+    st.markdown(f"<h2 style='text-align: center;'><strong>Prediction: {category}<strong></h2>", unsafe_allow_html=True)
+    st.markdown(f"<p style='text-align: center;'>Confidence: <b>{confidence:.2f}%</b></p>", unsafe_allow_html=True)
 
 # Upload image functionality
 uploaded_file = st.file_uploader("Upload an image...", type=["jpeg", "jpg", "png"])
@@ -117,8 +87,6 @@ if uploaded_file is not None:
         st.markdown(f"<h2 style='text-align: center;'><strong>Prediction: {category}<strong></h2>", unsafe_allow_html=True)
         st.markdown(f"<p style='text-align: center;'>Confidence: <b>{confidence:.2f}%</b></p>", unsafe_allow_html=True)
 
-
 # Run the app
 if st.button("Start Webcam", key="start_webcam"):
     run_app()
-

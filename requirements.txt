@@ -4,3 +4,4 @@ numpy
 gdown
 numpy
 pillow
+huggingface_hub

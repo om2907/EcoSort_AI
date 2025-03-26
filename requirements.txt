@@ -5,4 +5,4 @@ gdown
 numpy
 pillow
 huggingface_hub
-OpenCV
+opencv-contrib-python

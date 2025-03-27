@@ -89,4 +89,4 @@ if uploaded_file is not None:
 
 # Run the app
 #if st.button("Start Webcam", key="start_webcam"):
-    run_app()
+    

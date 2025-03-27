@@ -31,7 +31,7 @@ img_height = 180  # Height defined in the model
 img_width = 180   # Width defined in the model
 
 # Set header and description
-st header("AI Powered Waste Classification using KERAS")
+st.header("AI Powered Waste Classification using KERAS")
 
 # Function to make predictions on a frame
 def predict_frame(image):

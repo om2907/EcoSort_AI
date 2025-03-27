@@ -31,10 +31,7 @@ img_height = 180  # Height defined in the model
 img_width = 180   # Width defined in the model
 
 # Set header and description
-st.markdown(
-    "<h1 style='text-align: center; color: white; font-size: 40px; font-weight: bold;'>AI-Powered Waste Classification Using KERAS</h1>",
-    unsafe_allow_html=True
-)
+st header("AI Powered Waste Classification using KERAS")
 
 # Function to make predictions on a frame
 def predict_frame(image):
